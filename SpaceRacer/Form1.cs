@@ -19,9 +19,9 @@ namespace SpaceRacer
         int playerSpeed = 4;
 
         //Lists required for obstacles going left to right.
-        new List<Rectangle> obstacleList1 = new List<Rectangle>();
-        new List<int> speedList1 = new List<int>();
-        new List<int> sizeList1 = new List<int>();
+        new List<Rectangle> obstacleList = new List<Rectangle>();
+        new List<int> speedList = new List<int>();
+        new List<int> sizeList = new List<int>();
 
         bool upPressed = false;
         bool downPressed = false;
@@ -29,8 +29,8 @@ namespace SpaceRacer
         bool SPressed = false;
 
         //Declare colours to draw players and obstacles.
-        SolidBrush blueBrush = new SolidBrush(Color.Cyan);
-        SolidBrush redBrush = new SolidBrush(Color.Red);
+        SolidBrush orangeBrush = new SolidBrush(Color.OrangeRed);
+        SolidBrush greenBrush = new SolidBrush(Color.Lime);
         SolidBrush whiteBrush = new SolidBrush(Color.White);
 
         Pen goldPen = new Pen(Color.Gold, 10);
@@ -42,6 +42,9 @@ namespace SpaceRacer
         int player1Score = 0;
         int player2Score = 0;
         int time = 400;
+
+        //Put winner in a string to display in paint method.
+        string winner;
 
         //Set sounds.
         SoundPlayer pointEarned = new SoundPlayer(Properties.Resources.NewPointSound);
@@ -69,6 +72,18 @@ namespace SpaceRacer
                 case Keys.S:
                     SPressed = true;
                     break;
+                case Keys.Space:
+                    if (gameTimer.Enabled == false)
+                    {
+                        InitializeGame();
+                    }
+                    break;
+                case Keys.Escape:
+                    if (gameTimer.Enabled == false)
+                    {
+                        Application.Exit();
+                    }
+                    break;
             }
         }
 
@@ -91,24 +106,62 @@ namespace SpaceRacer
             }
         }
 
+        public void InitializeGame()
+        {
+            //Reset everything.
+            titleLabel.Text = "";
+            infoLabel.Text = "";
+
+            gameTimer.Enabled = true;
+
+            time = 400;
+            player1Score = 0;
+            player2Score = 0;
+
+            obstacleList.Clear();
+            sizeList.Clear();
+            speedList.Clear();
+
+            player1 = new Rectangle(200, 360, 20, 20);
+            player2 = new Rectangle(600, 360, 20, 20);
+        }
+
         private void SpaceRace_Paint(object sender, PaintEventArgs e)
-        { 
-            //Draw obstacles.
-            for (int i = 0; i < obstacleList1.Count; i++)
+        {
+            if (gameTimer.Enabled == false && time > 0)
             {
-                e.Graphics.FillEllipse(whiteBrush, obstacleList1[i]);
+                //Draw start screen.
+                titleLabel.Text = "SPACE RACER";
+                infoLabel.Text = "Press Space to Start or Esc to Exit";
             }
-            
-            //Draw players
-            e.Graphics.FillRectangle(blueBrush, player1);
-            e.Graphics.FillRectangle(redBrush, player2);
+            else if (gameTimer.Enabled == true)
+            {
+                //Update score display.
+                player1ScoreLabel.Text = $"{player1Score}";
+                player2ScoreLabel.Text = $"{player2Score}";
 
-            //Update score display.
-            player1ScoreLabel.Text = $"{player1Score}";
-            player2ScoreLabel.Text = $"{player2Score}";
+                //Draw players
+                e.Graphics.FillRectangle(greenBrush, player1);
+                e.Graphics.FillRectangle(orangeBrush, player2);
 
-            //Draw time line.
-            e.Graphics.DrawLine(goldPen, 395, 400, 395, this.Height - time);
+                //Draw time line.
+                e.Graphics.DrawLine(goldPen, 395, 400, 395, this.Height - time);
+
+                //Draw obstacles.
+                for (int i = 0; i < obstacleList.Count; i++)
+                {
+                    e.Graphics.FillEllipse(whiteBrush, obstacleList[i]);
+                }
+            }
+            else
+            {
+                //Clear scores and display winner.
+                player1ScoreLabel.Text = "";
+                player2ScoreLabel.Text = "";
+
+                titleLabel.Text = $"{winner}";
+                infoLabel.Text = "Press Space to Start or Esc to Exit";
+            }
         }
 
         private void gameTimer_Tick(object sender, EventArgs e)
@@ -142,51 +195,57 @@ namespace SpaceRacer
             {
                 randValue = randGen.Next(0, this.Height - 50);
                 Rectangle obstacle = new Rectangle(0, randValue, 0, 0);
-                obstacleList1.Add(obstacle);
-                speedList1.Add(randGen.Next(5, 15));
-                sizeList1.Add(randGen.Next(5, 15));
+                obstacleList.Add(obstacle);
+                speedList.Add(randGen.Next(5, 15));
+                sizeList.Add(randGen.Next(5, 15));
             }
-            if (randValue < 16)
+            else if (randValue < 16)
             {
                 randValue = randGen.Next(0, this.Height - 50);
                 Rectangle obstacle = new Rectangle(this.Width - 15, randValue, 0, 0);
-                obstacleList1.Add(obstacle);
-                speedList1.Add(randGen.Next(-15, -5));
-                sizeList1.Add(randGen.Next(5, 15));
+                obstacleList.Add(obstacle);
+                speedList.Add(randGen.Next(-15, -5));
+                sizeList.Add(randGen.Next(5, 15));
             }
             //Remove obstacles which go out of form.
-            for (int i = 0; i < obstacleList1.Count; i++)
+            for (int i = 0; i < obstacleList.Count; i++)
             {
-                if (obstacleList1[i].X > this.Width - 15 || obstacleList1[i].X < 0)
+                if (obstacleList[i].X > this.Width - 15 || obstacleList[i].X < 0)
                 {
-                    obstacleList1.RemoveAt(i);
-                    speedList1.RemoveAt(i);
-                    sizeList1.RemoveAt(i);
+                    obstacleList.RemoveAt(i);
+                    speedList.RemoveAt(i);
+                    sizeList.RemoveAt(i);
                 }
             }
            
             //Reset players if they come in contact with a obstacle.
-            for (int i = 0; i < obstacleList1.Count; i++)
+            for (int i = 0; i < obstacleList.Count; i++)
             {
-                if (player1.IntersectsWith(obstacleList1[i]))
+                if (player1.IntersectsWith(obstacleList[i]))
                 {
                     player1.X = 200;
                     player1.Y = 360;
                     explosion.Play();
+                    obstacleList.RemoveAt(i);
+                    speedList.RemoveAt(i);
+                    sizeList.RemoveAt(i);
                 }
-                if (player2.IntersectsWith(obstacleList1[i]))
+                if (player2.IntersectsWith(obstacleList[i]))
                 {
                     player2.X = 600;
                     player2.Y = 360;
                     explosion.Play();
+                    obstacleList.RemoveAt(i);
+                    sizeList.RemoveAt(i);
+                    speedList.RemoveAt(i);
                 }
             }
 
             //Make obstacles move.
-            for (int i = 0; i < obstacleList1.Count; i++)
+            for (int i = 0; i < obstacleList.Count; i++)
             {
-                int x = obstacleList1[i].X + speedList1[i];
-                obstacleList1[i] = new Rectangle(x, obstacleList1[i].Y, sizeList1[i], sizeList1[i]);
+                int x = obstacleList[i].X + speedList[i];
+                obstacleList[i] = new Rectangle(x, obstacleList[i].Y, sizeList[i], sizeList[i]);
             }
            
             //Give points to player 1.
@@ -205,21 +264,21 @@ namespace SpaceRacer
                 player2.Y = 360;
                 pointEarned.Play();
             }
-            //End game once time runs out and declare the winner or if it is a tie.
+            //End game once time runs out and store winner or a tie in a string.
             if (time == 0 && player1Score > player2Score)
             {
-                winnerLabel.Text = "Player 1 Wins";
+                winner = "Player 1 Wins!";
                 gameOver.Play();
                 gameTimer.Stop();
             }
             else if (time < 0 && player1Score < player2Score)
             {
-                winnerLabel.Text = "Player 2 Wins";
+                winner = "Player 2 Wins";
                 gameTimer.Stop();
             }
             else if (time < 0 && player1Score == player2Score)
             {
-                winnerLabel.Text = "Tie";
+                winner = "Tie";
                 gameTimer.Stop();
             }
 

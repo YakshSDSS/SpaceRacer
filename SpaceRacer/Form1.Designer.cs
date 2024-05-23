@@ -33,11 +33,12 @@
             this.player1ScoreLabel = new System.Windows.Forms.Label();
             this.player2ScoreLabel = new System.Windows.Forms.Label();
             this.winnerLabel = new System.Windows.Forms.Label();
+            this.titleLabel = new System.Windows.Forms.Label();
+            this.infoLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // gameTimer
             // 
-            this.gameTimer.Enabled = true;
             this.gameTimer.Interval = 20;
             this.gameTimer.Tick += new System.EventHandler(this.gameTimer_Tick);
             // 
@@ -74,14 +75,38 @@
             this.winnerLabel.TabIndex = 2;
             this.winnerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // titleLabel
+            // 
+            this.titleLabel.BackColor = System.Drawing.Color.Transparent;
+            this.titleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 26.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.titleLabel.ForeColor = System.Drawing.Color.Gold;
+            this.titleLabel.Location = new System.Drawing.Point(93, 9);
+            this.titleLabel.Name = "titleLabel";
+            this.titleLabel.Size = new System.Drawing.Size(609, 79);
+            this.titleLabel.TabIndex = 3;
+            this.titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // infoLabel
+            // 
+            this.infoLabel.BackColor = System.Drawing.Color.Transparent;
+            this.infoLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.infoLabel.ForeColor = System.Drawing.Color.White;
+            this.infoLabel.Location = new System.Drawing.Point(86, 155);
+            this.infoLabel.Name = "infoLabel";
+            this.infoLabel.Size = new System.Drawing.Size(616, 120);
+            this.infoLabel.TabIndex = 4;
+            this.infoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // SpaceRace
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = global::SpaceRacer.Properties.Resources.Background;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(800, 400);
+            this.Controls.Add(this.infoLabel);
+            this.Controls.Add(this.titleLabel);
             this.Controls.Add(this.winnerLabel);
             this.Controls.Add(this.player2ScoreLabel);
             this.Controls.Add(this.player1ScoreLabel);
@@ -103,6 +128,8 @@
         private System.Windows.Forms.Label player1ScoreLabel;
         private System.Windows.Forms.Label player2ScoreLabel;
         private System.Windows.Forms.Label winnerLabel;
+        private System.Windows.Forms.Label titleLabel;
+        private System.Windows.Forms.Label infoLabel;
     }
 }
 
